@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chat Filter</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      padding: 0;
+      margin: 0;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      color: #4b483d;
+    }
+
+    html,
+    body {
+      width: 100vw;
+      height: 100vh;
+      overflow-x: hidden;
+    }
+
+    p {
+      margin-top: 8px;
+      color: #ccc;
+    }
+
+    .chat-container {
+      display: flex;
+      width: 80%;
+      border: 1px solid black;
+      height: 800px;
+      margin: 0 auto;
+    }
+
+    .left-panel {
+      width: 100%;
+    }
+
+    .title-filter {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 10px;
+      /* Consolidated the repeated class */
+    }
+
+    #filter {
+      width: 80%;
+      border: none;
+      border-bottom: 1px solid black;
+      height: 44px;
+    }
+
+    .chats {
+      border: 1px solid;
+      display: none;
+      background-color: aliceblue;
+      position: relative;
+    }
+
+    .chat-box {
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid #ccc;
+      padding: 10px;
+      max-height: calc(100% - 80px);
+      height: 100%;
+      overflow-y: auto;
+      gap: 12px;
+    }
+
+    .chat-message {
+      display: flex;
+      flex-direction: column;
+      padding: 16px 0;
+    }
+
+    .product-card {
+      display: flex;
+      gap: 12px;
+    }
+
+    .product-image {
+      width: 44px;
+      height: 44px;
+    }
+
+    .product-image>img {
+      object-fit: contain;
+      width: 100%;
+      height: 100%;
+    }
+
+    .selected {
+      background-color: aliceblue;
+    }
+
+    .header {
+      width: 100%;
+      padding: 12px;
+      height: 44px;
+      background-color: white;
+    }
+
+    .bot-msg,
+    .user-msg {
+      display: block;
+      padding: 12px;
+      max-width: 200px;
+      border-radius: 12px;
+      margin-left: 10px;
+    }
+
+    .bot-msg {
+      background-color: #ccc;
+    }
+
+    .user-msg {
+      background-color: aqua;
+      margin-right: 10px;
+      align-self: end;
+    }
+
+    .input-msg {
+      display: flex;
+      height: 44px;
+      background-color: white;
+      width: 100%;
+      padding: 12px;
+      gap: 12px;
+    }
+
+    .input-msg>input {
+      width: 100%;
+      border: none;
+    }
+
+    .chat-list {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .content {
+      margin-top: 44px;
+      overflow-y: auto;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .placeholder {
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="chat-container">
+    <div class="left-panel" id="left-panel">
+      <div class="title-filter">
+        <input type="text" id="filter" placeholder="Filter by Title / Order ID" />
+      </div>
+      <div class="chat-box" id="chat-box">
+      </div>
+    </div>
+    <div class="chats" id="chats">
+    </div>
+  </div>
+
+  <script src="main.js">
+  </script>
+</body>
+
+</html>

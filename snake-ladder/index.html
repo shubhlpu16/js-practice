@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+   body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+  }
+
+  .board {
+    display: grid;
+    grid-template-columns: repeat(10, 50px);
+    grid-template-rows: repeat(10, 50px);
+    margin: 50px;
+  }
+
+  .square {
+    width: 50px;
+    height: 50px;
+    border: 1px solid #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    background-color: #f7f7f7;
+  }
+
+  .current-player {
+    background-color: #61dafb;
+  }
+
+  button {
+    font-size: 16px;
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #4caf50;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background-color: #45a049;
+  }
+</style>
+</head>
+<body>
+  <div class="board" id="board"></div>
+  <button onclick="rollDice()">Roll Dice</button>
+
+  <script>
+    // Define the board
+    const boardSize = 10;
+    const board = Array.from({ length: boardSize * boardSize }, (_, i) => i + 1);
+
+    // Define snakes and ladders
+    const snakesAndLadders = {
+      16: 6,
+      47: 26,
+      49: 11,
+      56: 53,
+      62: 19,
+      64: 60,
+      87: 24,
+      93: 73,
+      95: 75,
+      98: 78,
+    };
+
+    // Function to draw the board
+    function drawBoard() {
+      const boardElement = document.getElementById('board');
+      boardElement.innerHTML = '';
+      
+      for (let i = 0; i < boardSize * boardSize; i++) {
+        const square = document.createElement('div');
+        square.classList.add('square');
+        square.textContent = i + 1;
+        boardElement.appendChild(square);
+      }
+    }
+
+    // Function to handle dice roll
+    function rollDice() {
+      const diceValue = Math.floor(Math.random() * 6) + 1;
+      alert(`You rolled a ${diceValue}!`);
+
+      // Move player
+      movePlayer(diceValue);
+    }
+
+    // Function to move the player
+    function movePlayer(steps) {
+      const currentPlayerPosition = getCurrentPlayerPosition();
+      const newPlayerPosition = currentPlayerPosition + steps;
+
+      // Check for snakes and ladders
+      if (snakesAndLadders[newPlayerPosition]) {
+        alert(`You found a ladder or a snake! Moving to ${snakesAndLadders[newPlayerPosition]}!`);
+        setCurrentPlayerPosition(snakesAndLadders[newPlayerPosition]);
+      } else {
+        setCurrentPlayerPosition(newPlayerPosition);
+      }
+    }
+
+    // Function to get the current player position
+    function getCurrentPlayerPosition() {
+      return parseInt(localStorage.getItem('playerPosition')) || 1;
+    }
+
+    // Function to set the current player position
+    function setCurrentPlayerPosition(position) {
+      localStorage.setItem('playerPosition', position);
+
+      // Update the UI
+      drawBoard();
+      const currentSquare = document.querySelector(`.square:nth-child(${position})`);
+      currentSquare.classList.add('current-player');
+    }
+
+    // Initialize the game
+    drawBoard();
+    setCurrentPlayerPosition(1);
+  </script>
+</body>
+</html>

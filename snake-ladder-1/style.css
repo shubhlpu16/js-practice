@@ -1,0 +1,72 @@
+body {
+    display: grid;
+    place-content: center;
+    place-items: center;
+    font-family: sans-serif;
+    gap:12px;
+}
+
+.board {
+    display: grid;
+    grid-template-columns: repeat(10,50px);
+    grid-template-rows: repeat(10,50px);
+}
+
+.cell {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: solid 1px black;
+}
+
+.message {
+    font-size: 24px;
+    color: darkgray;
+}
+
+button {
+    box-shadow: 7px 6px 28px 1px rgba(0, 0, 0, 0.24); 
+    cursor: pointer; 
+    outline: none; 
+    transition: 0.2s all; 
+    &:active {
+        transform: scale(0.98); 
+        box-shadow: 3px 2px 22px 1px rgba(0, 0, 0, 0.24); 
+    }
+}
+
+.roll-dice {
+    background-color: lightgreen;
+    padding: 12px;
+    border: none;
+    border-radius: 6px;
+    color: white;
+    cursor: pointer;
+
+    &:hover {
+        background-color: green !important;
+    }
+}
+.reset {
+    background-color: lightcoral;
+    padding: 12px;
+    border: none;
+    border-radius: 6px;
+    color: white;
+    cursor: pointer;
+    
+    &:hover {
+        background-color: red!important;
+    }
+}
+
+.dice-value {
+    font-size: 16px;
+    color: chocolate;
+}
+
+.player-position {
+    background-color: aquamarine;
+}

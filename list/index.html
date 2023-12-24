@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dual List Selection</title>
+    <style>
+        .container {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .list {
+            width: 100px;
+            height: 150px;
+            border: 1px solid #ccc;
+            overflow-y: auto;
+        }
+
+        textarea {
+            width: 100px;
+            height: 50px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="list" id="listA">
+            <p class="list-item">Item A</p>
+            <p class="list-item">Item B</p>
+            <p class="list-item">Item C</p>
+        </div>
+
+        <div>
+            <button onclick="moveAllToB()">&gt;&gt;</button><br>
+            <button onclick="moveToB()">&gt;</button><br>
+            <button onclick="moveToA()">&lt;</button><br>
+            <button onclick="moveAllToA()">&lt;&lt;</button><br>
+            <button onclick="moveUp()">Up</button><br>
+            <button onclick="moveDown()">Down</button>
+        </div>
+
+        <div class="list" id="listB">
+            <p class="list-item">Item X</p>
+            <p class="list-item">Item Y</p>
+            <p class="list-item">Item Z</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <textarea id="newItem" placeholder="New Item"></textarea>
+        <button onclick="addItem()">Add</button>
+    </div>
+
+    <script>
+        function moveAllToB() {
+            const listA = document.getElementById('listA');
+            const listB = document.getElementById('listB');
+
+            while (listA.firstChild) {
+                listB.appendChild(listA.firstChild);
+            }
+        }
+
+        function moveToB() {
+            const listA = document.getElementById('listA');
+            const listB = document.getElementById('listB');
+
+            const selectedItems = listA.querySelectorAll('p[class="list-item selected"]');
+
+            selectedItems.forEach(item => {
+                listB.appendChild(item);
+            });
+        }
+
+        function moveToA() {
+            const listA = document.getElementById('listA');
+            const listB = document.getElementById('listB');
+
+            const selectedItems = listB.querySelectorAll('p[class="list-item selected"]');
+
+            selectedItems.forEach(item => {
+                listA.appendChild(item);
+            });
+        }
+
+        function moveAllToA() {
+            const listA = document.getElementById('listA');
+            const listB = document.getElementById('listB');
+
+            while (listB.firstChild) {
+                listA.appendChild(listB.firstChild);
+            }
+        }
+
+        function moveUp() {
+            const list = document.getElementById('listA');
+            const selectedItems = list.querySelectorAll('p[class="list-item selected"]');
+
+            selectedItems.forEach(item => {
+                const prev = item.previousElementSibling;
+                if (prev) {
+                    list.insertBefore(item, prev);
+                }
+            });
+        }
+
+        function moveDown() {
+            const list = document.getElementById('listA');
+            const selectedItems = list.querySelectorAll('p[class="list-item selected"]');
+
+            for (let i = selectedItems.length - 1; i >= 0; i--) {
+                const item = selectedItems[i];
+                const next = item.nextElementSibling;
+                if (next) {
+                    list.insertBefore(next, item);
+                }
+            }
+        }
+
+        function addItem() {
+            const newItemText = document.getElementById('newItem').value;
+            const newItem = document.createElement('p');
+            newItem.innerText = newItemText;
+            newItem.className = "list-item";
+            const listA = document.getElementById('listA');
+            listA.appendChild(newItem);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const listItems = document.querySelectorAll('.list-item');
+
+            listItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    item.classList.toggle('selected');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
