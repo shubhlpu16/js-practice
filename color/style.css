@@ -1,0 +1,17 @@
+body {
+    display: grid;
+    place-content: center;
+    place-items: center;
+    height: 100vh;
+}
+
+.container {
+    height: 200px;
+    width: 200px;
+    border: 1px solid;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    transition: all 0.3s ease-in;
+}
