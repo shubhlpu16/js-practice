@@ -1,130 +1,225 @@
-function myPromise(callback) {
-    let onResolve;
-    let onReject;
-    let isCalled=false;
-    let isFullfiled=false;
-    let isRejected=false;
-    let val;
-    let err;
+// class MyPromise {
+//   constructor(executor) {
+//     this.state = "pending"; // "fulfilled" | "rejected"
+//     this.value = undefined;
+//     this.onFulfilled = [];
+//     this.onRejected = [];
 
-    this.then=function (resolveHandler){
-        onResolve=resolveHandler
-        if(!isCalled && isFullfiled) {
-            onResolve(val)
-            isCalled=true
-        }
-        return this
-    }
+//     const resolve = (value) => {
+//       if (this.state !== "pending") return; // Prevent multiple resolves
 
-    this.catch=function (rejectHandler){
-        onReject=rejectHandler
-        if(!isCalled && isRejected) {
-            onReject(err)
-            isCalled=true
-        }
-        return this
-    }
+//       if (value instanceof MyPromise) {
+//         return value.then(resolve, reject); // Handle nested Promises
+//       }
 
-    function resolve(value){
-        val=value
-        isFullfiled=true
-        if(typeof onResolve=="function" && !isCalled) {
-            onResolve(value)
-        }
-       
-    }
+//       this.state = "fulfilled";
+//       this.value = value;
+//       this.onFulfilled.forEach((fn) => fn(value));
+//     };
 
-    function reject(error){
-        err=error
-        isRejected=true
-        if(typeof onReject=="function" && !isCalled ) {
-            onReject(error)
-        }
-    }
+//     const reject = (reason) => {
+//       if (this.state !== "pending") return; // Prevent multiple rejects
 
-    callback(resolve, reject)
-}
+//       this.state = "rejected";
+//       this.value = reason;
+//       this.onRejected.forEach((fn) => fn(reason));
+//     };
 
-myPromise.reject=(reason=>{
-    return new myPromise((reject)=>{
-        reject(reason)
-    })
-})
+//     try {
+//       executor(resolve, reject);
+//     } catch (err) {
+//       reject(err);
+//     }
+//   }
 
-myPromise.resolve=(val=>{
-    return new myPromise((resolve)=>{
-        resolve(val)
-    })
-})
+//   then(onFulfilled, onRejected) {
+//     return new MyPromise((resolve, reject) => {
+//       const handleFulfill = () => {
+//         queueMicrotask(() => {
+//           try {
+//             const result = onFulfilled ? onFulfilled(this.value) : this.value;
+//             resolve(result);
+//           } catch (error) {
+//             reject(error);
+//           }
+//         });
+//       };
 
-myPromise.all=(promises)=>{
-return new myPromise((resolve,reject)=>{
-    if(!Array.isArray(promises)) {
-        return reject(new TypeError('promises is not array'))
-    }
-    let results=[]
-    let count=0
-    promises.forEach((promise)=>{
-        Promise.resolve(promise).then((res)=>{
-            results.push(res)
-            count++
-            if(count===promises.length){
-                resolve(results)
-            }
-        }).catch((err)=>{
-            reject(err)
-        })
-    })
-})
-}
+//       const handleReject = () => {
+//         queueMicrotask(() => {
+//           try {
+//             if (!onRejected) {
+//               reject(this.value); // If no handler, propagate rejection
+//             } else {
+//               const result = onRejected(this.value);
+//               resolve(result);
+//             }
+//           } catch (error) {
+//             reject(error);
+//           }
+//         });
+//       };
 
+//       if (this.state === "fulfilled") {
+//         handleFulfill();
+//       } else if (this.state === "rejected") {
+//         handleReject();
+//       } else {
+//         this.onFulfilled.push(handleFulfill);
+//         this.onRejected.push(handleReject);
+//       }
+//     });
+//   }
 
-const p = new myPromise((resolve)=>{setTimeout(()=>resolve('setTime'),200)})
+//   catch(onRejected) {
+//     return this.then(null, onRejected);
+//   }
 
-const p1 = new myPromise((resolve)=>{resolve('hello')})
+//   static resolve(value) {
+//     return new MyPromise((resolve) => resolve(value));
+//   }
 
-p.then((res)=>{
-    console.log(res)
-}).catch((e)=>{
-    console.log(e)
-})
+//   static reject(reason) {
+//     return new MyPromise((_, reject) => reject(reason));
+//   }
+// }
 
-p1.then((res)=>{
-    console.log(res)
-}).catch((e)=>{
-    console.log(e)
-})
+// // ✅ Example Usage
+// const p1 = new MyPromise((resolve) => setTimeout(() => resolve("Hello"), 1000));
+// p1.then(console.log); // After 1s: "Hello"
 
-function PromiseAll(promises) {
-    return new Promise((resolve, reject) => {
-  
-      if (!Array.isArray(promises)) {
-        return reject(new TypeError('promises is not array'))
+// const p2 = MyPromise.resolve(42);
+// p2.then(console.log); // Logs 42 immediately
+
+// const p3 = MyPromise.reject("Error!");
+// p3.catch(console.error); // Logs "Error!"
+
+// // ✅ Chaining works
+// MyPromise.resolve(1)
+//   .then((x) => x + 1)
+//   .then((x) => x * 3)
+//   .then(console.log); // Logs 6
+
+// // ✅ Handling errors correctly
+// const p4 = new MyPromise((_, reject) => reject("Failed"));
+// p4.then(() => console.log("Won't run")).catch(console.error); // Logs "Failed"
+class MyPromise {
+  constructor(executor) {
+    this.state = "pending";
+    this.value = null;
+    this.reason = null;
+    this.fulfilledCallbacks = [];
+    this.rejectedCallbacks = [];
+
+    const resolve = (value) => {
+      if (this.state !== "pending") return;
+
+      if (value && typeof value.then === "function") {
+        return value.then(resolve, reject);
       }
-  
-  
-      let results = [];
-      let counter = 0
-  
-      promises.forEach(promise => {
-        Promise.resolve(promise).then((result) => {
-          results.push(result)
-          counter++
-          if (counter === promises.length) {
-            resolve(results)
-          }
-        }).catch((e) => reject(e))
-      })
-    })
+
+      this.state = "fulfilled";
+      this.value = value;
+      this.fulfilledCallbacks.forEach((cb) => cb(value));
+    };
+
+    const reject = (reason) => {
+      if (this.state !== "pending") return;
+
+      this.state = "rejected";
+      this.reason = reason;
+      this.rejectedCallbacks.forEach((cb) => cb(reason));
+    };
+
+    try {
+      executor(resolve, reject);
+    } catch (e) {
+      reject(e);
+    }
   }
-  const promise1 = 1;
-  const promise2 = new Promise((resolve) => resolve(2))
-  const promise3 = new Promise(resolve => setTimeout(() => {
-    resolve(3)
-  }, 1000))
-  
-  PromiseAll([promise1, promise3, promise2]).then(r => console.log('PromiseAll',r)).catch(e => console.log(e))
-const pall=  myPromise.all([promise1, promise3, promise2])
-pall.then((res)=>{
-    console.log('myPromiseAll',res)
-})
+
+  then(onFulfilled, onRejected) {
+    return new MyPromise((resolve, reject) => {
+      const handleSuccess = () => {
+        queueMicrotask(() => {
+          try {
+            const result = onFulfilled ? onFulfilled(this.value) : this.value;
+            resolve(result);
+          } catch (error) {
+            reject(error);
+          }
+        });
+      };
+
+      const handleFailure = () => {
+        queueMicrotask(() => {
+          try {
+            if (onRejected) {
+              const result = onRejected(this.reason);
+              resolve(result);
+            } else {
+              reject(this.reason);
+            }
+          } catch (error) {
+            reject(error);
+          }
+        });
+      };
+
+      if (this.state === "fulfilled") {
+        handleSuccess();
+      } else if (this.state === "rejected") {
+        handleFailure();
+      } else {
+        this.fulfilledCallbacks.push(handleSuccess);
+        this.rejectedCallbacks.push(handleFailure);
+      }
+    });
+  }
+
+  catch(onRejected) {
+    return this.then(null, onRejected);
+  }
+
+  static resolve(value) {
+    return new MyPromise((resolve) => resolve(value));
+  }
+
+  static reject(reason) {
+    return new MyPromise((_, reject) => reject(reason));
+  }
+}
+
+const promiseAll = (promises) => {
+  return new MyPromise((res, rej) => {
+    if (!Array.isArray(promises)) {
+      return rej(new TypeError("Argument must be an array"));
+    }
+
+    let count = 0;
+    const results = new Array(promises.length);
+
+    promises.forEach((promise, index) => {
+      MyPromise.resolve(promise)
+        .then((value) => {
+          results[index] = value;
+          count++;
+          if (count === promises.length) {
+            res(results);
+          }
+        })
+        .catch((error) => rej(error));
+    });
+  });
+};
+
+// Test cases
+const promise1 = 1;
+const promise2 = new MyPromise((resolve) => resolve(2));
+const promise3 = new MyPromise((resolve) => setTimeout(() => resolve(3), 1000));
+
+promiseAll([promise1, promise2, promise3]).then(console.log); // [1, 2, 3] after 1 sec
+
+promiseAll([promise1, promise3, promise2])
+  .then((r) => console.log(r))
+  .catch((e) => console.log(e));

@@ -2,7 +2,7 @@ const arr = [1, 2, 3, 4, 5, 6];
 
 Array.prototype.myReduce = function (cb, initial) {
   const array = this;
-  const length = arr.length;
+  const length = array.length;
   let acc = initial === undefined ? array[0] : initial;
 
   for (let index = 0; index < length; index++) {
@@ -269,3 +269,73 @@ const obj3 = { a: 1, b: { c: 3 } };
 
 console.log(deepCompare(obj1, obj2)); // Output: true
 console.log(deepCompare(obj1, obj3)); // Output: false
+
+ function PromiseAll(promises) {
+  return new Promise((resolve, reject) => {
+
+    if (!Array.isArray(promises)) {
+      return reject(new TypeError('promises is not array'))
+    }
+
+
+    let results = [];
+    let counter = 0
+
+    promises.forEach(promise => {
+      Promise.resolve(promise).then((result) => {
+        results.push(result)
+        counter++
+        if (counter === promises.length) {
+          resolve(results)
+        }
+      }).catch((e) => reject(e))
+    })
+  })
+}
+
+const promise1 = 1;
+const promise2 = new Promise((resolve) => resolve(2))
+const promise3 = new Promise(resolve => setTimeout(() => {
+  resolve(3)
+}, 1000))
+
+PromiseAll([promise1, promise3, promise2]).then(r => console.log(r)).catch(e => console.log(e)) */
+
+
+function add(a) {
+return function(b) {
+  if(b) {
+  return add(a+b)
+  }
+  return a
+}
+}
+
+const add = a => {
+  return (b) => {
+    if (b) {
+      return add(a + b)
+    }
+    return a
+  }
+} 
+function add(...args) {
+  const a = args.reduce(((a, b) => a + b), 0)
+  return function(...args) {
+    const b = args.reduce(((a, b) => a + b), 0)
+    if (b) {
+      return add(a + b)
+    }
+    return a;
+  }
+}
+console.log(add(1,2,3)(2,4)(3,5,6,7,8)(4)())
+
+function add(a){
+return function(b) {
+return a+b
+}
+}
+
+const add5=add(5)
+console.log(add5(6)) 
